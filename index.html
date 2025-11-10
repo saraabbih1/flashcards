@@ -1,40 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cards</title>
+    <title>login</title>
     <link href="src/output.css" rel="stylesheet">
 
 </head>
+<body class="bg-pink-500 min-h-screen flex justify-center items-center">
+    <header class="absolute top-0 left-0 w-full flex justify-between px-10 py-4 text-purple-900 text-sm">
+        <h1 class="text-3xl italic text-purple-800">cards</h1>
+        <nav class="space-x-6">
+            <a href="formulcard.html" class="hover:underline">flashcard</a>
+            <a href="quiz.html" class="hover:underline">quiz</a>
+            <a href="index.html"class="ml-3" >inscription</a>
+            
+        </nav>
+    </header>
 
-<body>
-    <div id="contnr" class="w-[805px] h-[565px] bg-pink-500  rounded-md flex flex-col justify-center items-center ">
-        <h1 class="text-purple-600 flex justify-center items-center ">cards</h1>
-        <form id="wstlcont" class="w-[400px] h-[300px] bg-white/40 flex justify-center items-center rounded-md ">
-            <div>
-                <h1 class=" flex justify-center items-center mb-4 text-white font-bold">login</h1>
-                <div class="relative mb-4">
-                    <label for="username"></label>
-                    <input type="text" placeholder="username"
-                        class="border border-gray-400  bg-white rounded px-2 py-1 text-red-400">
-                </div>
-                <br>
-                <div>
-                    <i class="fa-solid fa-user"></i>
-                    <label for="password"></label>
-                    <input type="text" placeholder="password "
-                        class="border border-gray-400  bg-white rounded px-2 py-1 text-red-400">
-                </div>
-                <div>
-                    <button type="submit"
-                        class="rounded  h-[] bg-white cursor-pointer flex justify-center items-center mt-4 mx-auto text-red-400 p-2">send</button>
-                </div>
-            </div>
+    <div id="contr" class="w-[805px] h-[565px] bg-pink-500 rounded-md flex flex-col justify-center items-center">
+        <h1 class="text-purple-700 italic text-3xl mb-4">login</h1>
+        <form id="informationbare" class="w-[400px] h-[300px] bg-white/40 flex flex-col justify-center items-center rounded-md space-y-4">
+            <input type="text" placeholder="Username" class="border-gray-300 bg-white rounded px-2 text-gray-700 w-3/4 focus:outline-purple-900">
+            <input type="password"  placeholder="Password" class=" border border-gray-300 bg-white rounded px-3 py-2 text-gray-700 w-3/4 focus:outline-purple-900">
+               <button type="submit " class="border border-gray-300 bg-white rounded px-3 py-2 mt-2 hover:bg-pink-500 text-gray-400">send</button>
         </form>
     </div>
-
+    
 </body>
-
 </html>
