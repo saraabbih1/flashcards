@@ -7,131 +7,55 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    .option { cursor: pointer; transition: 0.2s; }
-    .correct { background-color: #16a34a !important; color: white; }
-    .wrong { background-color: #dc2626 !important; color: white; }
-    .disabled { pointer-events: none; opacity: 0.7; }
+    .correct { background-color: #16a34a !important; color: white !important; }
+    .wrong { background-color: #dc2626 !important; color: white !important; }
+    .disabled { pointer-events: none; opacity: 0.6; }
   </style>
 </head>
 
-<body class="bg-purple-200 min-h-screen flex justify-center items-center p-6">
+<body class="bg-pink-400 min-h-screen flex justify-center items-center p-6">
 
-<div class="w-full max-w-lg bg-white p-6 rounded-2xl shadow-xl text-center">
+<div class="w-full max-w-lg bg-pink-300 p-6 rounded-2xl shadow-xl text-center">
 
-  <h1 class="text-2xl font-bold text-purple-700 mb-4">Quiz JSON</h1>
+  <h1 class="text-3xl font-bold italic text-purple-800 mb-4">Quiz JSON</h1>
 
-  <div class="flex justify-between text-purple-600 font-semibold mb-3">
+  <div class="flex justify-between text-purple-900 font-semibold mb-3">
     <span id="scoreText">Score : 0</span>
     <span id="highScoreText">High Score : 0</span>
   </div>
 
-  <h2 id="question" class="text-xl font-bold mb-4"></h2>
+  <h2 id="question" class="text-xl font-bold mb-4 text-purple-800"></h2>
 
   <div id="options" class="space-y-3"></div>
 
-  <button id="nextBtn" class="mt-6 px-4 py-2 bg-purple-600 text-white rounded-xl w-full hover:bg-purple-700">
-    Next
-  </button>
+  <div class="flex justify-between mt-6">
+    <button id="backBtn" 
+            class="px-4 py-2 bg-pink-200 text-purple-900 rounded-full hover:bg-pink-100 transition">
+      Back
+    </button>
+    <button id="showAnswerBtn" 
+            class="px-4 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition">
+      Show Answer
+    </button>
+    <button id="nextBtn" 
+            class="px-4 py-2 bg-pink-200 text-purple-900 rounded-full hover:bg-pink-100 transition">
+      Next
+    </button>
+  </div>
 
   <div id="finalScreen" class="hidden mt-6">
-    <h2 class="text-2xl font-bold text-purple-700">Quiz terminé 🎉</h2>
-    <p id="finalScore" class="text-lg my-2"></p>
+    <h2 class="text-2xl font-bold text-purple-800">Quiz terminé 🎉</h2>
+    <p id="finalScore" class="text-lg my-2 text-purple-900"></p>
     <p id="finalHighScore" class="text-lg font-bold text-green-600"></p>
 
     <button onclick="restartQuiz()" 
-            class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-xl w-full hover:bg-purple-700">
+            class="mt-4 px-4 py-2 bg-pink-200 text-purple-900 rounded-full w-full hover:bg-pink-100 transition">
       Rejouer
     </button>
   </div>
 
 </div>
 
-<script>
-let questions = [];
-let index = 0;
-let score = 0;
-let highScore = localStorage.getItem("highScore") || 0;
-
-// load high score
-document.getElementById("highScoreText").textContent = "High Score : " + highScore;
-
-// fetch JSON
-fetch("data/quizzes.json")
-  .then(res => res.json())
-  .then(data => {
-    questions = data;
-    loadQuestion();
-  })
-  .catch(err => console.log("Erreur JSON:", err));
-
-function loadQuestion() {
-  let q = questions[index];
-  document.getElementById("question").textContent = q.question;
-
-  let optionsDiv = document.getElementById("options");
-  optionsDiv.innerHTML = "";
-
-  q.options.forEach((opt, i) => {
-    let div = document.createElement("div");
-    div.className = "option p-3 bg-purple-100 rounded-xl hover:bg-purple-300";
-    div.textContent = opt;
-    div.onclick = () => select(div, i);
-    optionsDiv.appendChild(div);
-  });
-}
-
-function select(btn, i) {
-  let q = questions[index];
-  let all = document.querySelectorAll(".option");
-
-  all.forEach(o => o.classList.add("disabled"));
-
-  if (i === q.correct) {
-    btn.classList.add("correct");
-    score++;
-    document.getElementById("scoreText").textContent = "Score : " + score;
-  } else {
-    btn.classList.add("wrong");
-    all[q.correct].classList.add("correct");
-  }
-}
-
-document.getElementById("nextBtn").onclick = () => {
-  index++;
-  if (index >= questions.length) endQuiz();
-  else loadQuestion();
-};
-
-function endQuiz() {
-  document.getElementById("question").classList.add("hidden");
-  document.getElementById("options").classList.add("hidden");
-  document.getElementById("nextBtn").classList.add("hidden");
-
-  document.getElementById("finalScreen").classList.remove("hidden");
-  document.getElementById("finalScore").textContent = "Score final : " + score;
-
-  if (score > highScore) {
-    localStorage.setItem("highScore", score);
-    highScore = score;
-  }
-
-  document.getElementById("finalHighScore").textContent =
-    "High Score : " + highScore;
-}
-
-function restartQuiz() {
-  index = 0;
-  score = 0;
-
-  document.getElementById("scoreText").textContent = "Score : 0";
-  document.getElementById("question").classList.remove("hidden");
-  document.getElementById("options").classList.remove("hidden");
-  document.getElementById("nextBtn").classList.remove("hidden");
-  document.getElementById("finalScreen").classList.add("hidden");
-
-  loadQuestion();
-}
-</script>
-
+<script src="quiz.js"></script>
 </body>
 </html>

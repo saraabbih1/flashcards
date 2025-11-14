@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Que signifie HTML ?",
+    "options": [
+      "Hyper Trainer Marking Language",
+      "Hyper Text Markup Language",
+      "High Text Machine Language",
+      "Home Tool Markup Language"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "La balise <div> est-elle sémantique ?",
+    "options": [
+      "Oui, toujours",
+      "Non, elle n'est pas sémantique",
+      "Seulement en mobile",
+      "Seulement en React"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "La balise <p> sert à quoi ?",
+    "options": [
+      "Créer un paragraphe",
+      "Créer une image",
+      "Créer un lien",
+      "Créer une section"
+    ],
+    "correct": 0
+  }
+]
