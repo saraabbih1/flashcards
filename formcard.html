@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcards - Collections avec Flip</title>
+  <link href="src/output.css" rel="stylesheet">
+  <style>
+    /*  flip  */
+    .flip-card {
+      background-color: transparent;
+      width: 250px;
+      height: 160px;
+      perspective: 1000px;
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+
+    .flip-card:hover .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front,
+    .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .flip-card-front {
+      background-color: #f9a8d4; 
+      color: #4a044e; 
+    }
+
+    .flip-card-back {
+      background-color: #a78bfa; 
+      color: white;
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+
+<body class="bg-pink-400 min-h-screen flex flex-col items-center text-center text-purple-900 relative">
+
+ 
+  <header class="absolute top-0 left-0 w-full flex justify-between items-center px-10 py-4 bg-white/40 backdrop-blur-sm shadow-sm">
+    <h1 class="text-3xl italic font-bold text-purple-800">Cards</h1>
+    <nav class="space-x-6 text-sm">
+      <a href="index.html" class="hover:underline">Accueil</a>
+      <a href="quiz.html" class="hover:underline">Quiz</a>
+      <a href="flashcards.html" class="hover:underline font-semibold text-purple-900">Flashcards</a>
+    </nav>
+  </header>
+
+ 
+  <main class="mt-28 bg-pink-300 rounded-2xl p-8 shadow-lg w-[400px] flex flex-col items-center">
+
+    <h2 class="text-2xl font-bold mb-4 text-purple-800">Crée tes collections de cartes </h2>
+
+   
+    <form id="collectionForm" class="w-full flex flex-col gap-3 mb-6">
+      <input id="collectionTitle" type="text" placeholder="Titre de la collection (ex: sarra info)"class="px-3 py-2 rounded-full bg-pink-100 placeholder-purple-700 text-purple-900 outline-none focus:ring-2 focus:ring-pink-200">
+      <button type="submit"class="bg-pink-200 text-purple-900 font-semibold rounded-full px-6 py-2 hover:bg-pink-100 transition">
+         Créer la collection
+      </button>
+    </form>
+
+    
+    <form id="cardForm" class="w-full flex flex-col gap-3 mb-6">
+      <select id="collectionSelect"
+        class="px-3 py-2 rounded-full bg-pink-100 text-purple-900 outline-none focus:ring-2 focus:ring-pink-200">
+      </select>
+      <input id="question" type="text" placeholder="Question"
+        class="px-3 py-2 rounded-full bg-pink-100 placeholder-purple-700 text-purple-900 outline-none focus:ring-2 focus:ring-pink-200">
+      <input id="answer" type="text" placeholder="Réponse"
+        class="px-3 py-2 rounded-full bg-pink-100 placeholder-purple-700 text-purple-900 outline-none focus:ring-2 focus:ring-pink-200">
+      <button type="submit"
+        class="bg-pink-200 text-purple-900 font-semibold rounded-full px-6 py-2 hover:bg-pink-100 transition">
+         Ajouter la carte
+      </button>
+    </form>
+
+ 
+    <section id="collectionsList" class="w-full text-left space-y-3">
+      <h3 class="font-semibold text-purple-800 text-lg mb-2"> Mes collections</h3>
+      <div id="collectionsContainer" class="space-y-2 text-sm text-purple-900">
+        <p class="text-purple-700 text-center text-sm">Aucune collection pour le moment...</p>
+      </div>
+    </section>
+
+ 
+    <section id="cardsView" class="hidden mt-8 w-full flex flex-col items-center">
+      <h3 id="currentCollectionTitle" class="font-bold text-lg mb-4 text-purple-800"></h3>
+      <div id="cardsContainer" class="grid grid-cols-1 gap-4"></div>
+      
+    </section>
+
+  </main>
+
+  <script>
+    const collectionForm = document.getElementById("collectionForm");
+    const cardForm = document.getElementById("cardForm");
+    const collectionTitleInput = document.getElementById("collectionTitle");
+    const collectionSelect = document.getElementById("collectionSelect");
+    const questionInput = document.getElementById("question");
+    const answerInput = document.getElementById("answer");
+    const collectionsContainer = document.getElementById("collectionsContainer");
+    const cardsView = document.getElementById("cardsView");
+    const cardsContainer = document.getElementById("cardsContainer");
+    const currentCollectionTitle = document.getElementById("currentCollectionTitle");
+    const closeViewBtn = document.getElementById("closeView");
+
+    let collections = JSON.parse(localStorage.getItem("flip_collections")) || [];
+    let currentCollection = null;
+
+    const saveCollections = () => localStorage.setItem("flip_collections", JSON.stringify(collections));
+
+    function updateSelect() {
+      collectionSelect.innerHTML = "";
+      if (collections.length === 0) {
+        collectionSelect.innerHTML = '<option value="">Aucune collection</option>';
+        return;
+      }
+      collections.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.title;
+        opt.textContent = c.title;
+        collectionSelect.appendChild(opt);
+      });
+    }
+
+    function afficherCollections() {
+      collectionsContainer.innerHTML = "";
+      if (collections.length === 0) {
+        collectionsContainer.innerHTML = '<p class="text-purple-700 text-center">Aucune collection pour le moment...</p>';
+        return;
+      }
+      collections.forEach((col, i) => {
+        const div = document.createElement("div");
+        div.className = "bg-pink-200 rounded-lg p-3 flex justify-between items-center cursor-pointer hover:bg-pink-100";
+        div.innerHTML = `<span>${col.title} (${col.cards.length} cartes)</span>`;
+        div.addEventListener("click", () => ouvrirCollection(i));
+        collectionsContainer.appendChild(div);
+      });
+    }
+
+    collectionForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const title = collectionTitleInput.value.trim();
+      if (!title) return;
+      collections.push({ title, cards: [] });
+      collectionTitleInput.value = "";
+      saveCollections();
+      updateSelect();
+      afficherCollections();
+    });
+
+    cardForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const title = collectionSelect.value;
+      const question = questionInput.value.trim();
+      const answer = answerInput.value.trim();
+      if (!title || !question || !answer) return;
+      const collection = collections.find(c => c.title === title);
+      if (collection) {
+        collection.cards.push({ question, answer });
+        saveCollections();
+        questionInput.value = "";
+        answerInput.value = "";
+        afficherCollections();
+      }
+    });
+
+    function ouvrirCollection(index) {
+      currentCollection = collections[index];
+      currentCollectionTitle.textContent = currentCollection.title;
+      document.querySelectorAll("main > section").forEach(s => s.classList.add("hidden"));
+      cardsView.classList.remove("hidden");
+      afficherCartes();
+    }
+
+    function afficherCartes() {
+      cardsContainer.innerHTML = "";
+      if (currentCollection.cards.length === 0) {
+        cardsContainer.innerHTML = '<p class="text-purple-700 text-sm">Aucune carte dans cette collection...</p>';
+        return;
+      }
+      currentCollection.cards.forEach(card => {
+        const cardHTML = `
+          <div class="flip-card mx-auto">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">${card.question}</div>
+              <div class="flip-card-back">${card.answer}</div>
+            </div>
+          </div>
+        `;
+        cardsContainer.innerHTML += cardHTML;
+      });
+    }
+
+    closeViewBtn.addEventListener("click", () => {
+      cardsView.classList.add("hidden");
+      document.querySelectorAll("main > section").forEach(s => s.classList.remove("hidden"));
+    });
+
+    // Initialisation
+    updateSelect();
+    afficherCollections();
+  </script>
+
+</body>
+</html>

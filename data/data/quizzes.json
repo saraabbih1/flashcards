@@ -1,0 +1,17 @@
+[
+  {
+    "question": "Quel est le rôle du tag <h1> ?",
+    "options": ["Paragraphe", "Titre principal", "Image", "Lien"],
+    "correct": 1
+  },
+  {
+    "question": "Quelle propriété CSS change la couleur du texte ?",
+    "options": ["background-color", "text-color", "color", "font-color"],
+    "correct": 2
+  },
+  {
+    "question": "Quelle fonction affiche un message dans la console ?",
+    "options": ["console.log()", "alert()", "print()", "message()"],
+    "correct": 0
+  }
+]

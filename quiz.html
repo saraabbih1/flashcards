@@ -1,55 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quiz Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz JSON</title>
   <script src="https://cdn.tailwindcss.com"></script>
 
-
+  <style>
+    .option { cursor: pointer; transition: 0.2s; }
+    .correct { background-color: #16a34a !important; color: white; }
+    .wrong { background-color: #dc2626 !important; color: white; }
+    .disabled { pointer-events: none; opacity: 0.7; }
+  </style>
 </head>
 
-<body class="bg-pink-500 min-h-screen flex justify-center items-center">
-  <div class=" w-[600px] h-[600px] bg-pink-400 flex flex-col">
-    <div class="bg-pink-200/70 h-8 flex justify-end items-center px-3 text-brown-800 text-sm font-serif">
-      
-      <a href="quiz.html">quiz</a>
-      <a href="index.html"class="ml-3" >inscription</a>
-      <a href="cards.html" class="ml-3">card</a>
-      
-    </div>
+<body class="bg-purple-200 min-h-screen flex justify-center items-center p-6">
 
-    <!-- Content -->
-    <div class="flex flex-col flex-1 items-center justify-center text-center px-6">
+<div class="w-full max-w-lg bg-white p-6 rounded-2xl shadow-xl text-center">
 
-      <!-- Title -->
-      <h1 class="italic text-4xl mb-10 text-purple-900">Cards</h1>
+  <h1 class="text-2xl font-bold text-purple-700 mb-4">Quiz JSON</h1>
 
-     
-      <div class="flex items-center justify-center gap-6">
-
-       
-        <img src="imgcard/Quiz time neon signs style text vector _ Premium Vector.jpeg" alt="Quiz Time" class="w-28 h-28 mb-6 rounded-lg">
-
-      
-        <div class="text-left text-brown-800 text-sm max-w-xs">
-          <h2 class="font-bold mb-2">quiz:</h2>
-          <p>
-            Taking your quiz is quick and simple.<br>
-            Just enter the quiz and start answering the questions one by one.<br>
-            Test your knowledge, track your score in real time,<br>
-            and see how well you do. Once finished, review your<br>
-            results and learn from your mistakes. Get ready,<br>
-            stay focused, and enjoy the challenge.
-          </p>
-
-          <button class=" italic mt-5 bg-pink-300/70 px-6 py-2 rounded-lg text-black hover:bg-pink-300 transition">
-            let's go
-          </button>
-        </div>
-      </div>
-    </div>
+  <div class="flex justify-between text-purple-600 font-semibold mb-3">
+    <span id="scoreText">Score : 0</span>
+    <span id="highScoreText">High Score : 0</span>
   </div>
+
+  <h2 id="question" class="text-xl font-bold mb-4"></h2>
+
+  <div id="options" class="space-y-3"></div>
+
+  <button id="nextBtn" class="mt-6 px-4 py-2 bg-purple-600 text-white rounded-xl w-full hover:bg-purple-700">
+    Next
+  </button>
+
+  <div id="finalScreen" class="hidden mt-6">
+    <h2 class="text-2xl font-bold text-purple-700">Quiz terminé 🎉</h2>
+    <p id="finalScore" class="text-lg my-2"></p>
+    <p id="finalHighScore" class="text-lg font-bold text-green-600"></p>
+
+    <button onclick="restartQuiz()" 
+            class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-xl w-full hover:bg-purple-700">
+      Rejouer
+    </button>
+  </div>
+
+</div>
+
+<script>
+let questions = [];
+let index = 0;
+let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
+
+// load high score
+document.getElementById("highScoreText").textContent = "High Score : " + highScore;
+
+// fetch JSON
+fetch("data/quizzes.json")
+  .then(res => res.json())
+  .then(data => {
+    questions = data;
+    loadQuestion();
+  })
+  .catch(err => console.log("Erreur JSON:", err));
+
+function loadQuestion() {
+  let q = questions[index];
+  document.getElementById("question").textContent = q.question;
+
+  let optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  q.options.forEach((opt, i) => {
+    let div = document.createElement("div");
+    div.className = "option p-3 bg-purple-100 rounded-xl hover:bg-purple-300";
+    div.textContent = opt;
+    div.onclick = () => select(div, i);
+    optionsDiv.appendChild(div);
+  });
+}
+
+function select(btn, i) {
+  let q = questions[index];
+  let all = document.querySelectorAll(".option");
+
+  all.forEach(o => o.classList.add("disabled"));
+
+  if (i === q.correct) {
+    btn.classList.add("correct");
+    score++;
+    document.getElementById("scoreText").textContent = "Score : " + score;
+  } else {
+    btn.classList.add("wrong");
+    all[q.correct].classList.add("correct");
+  }
+}
+
+document.getElementById("nextBtn").onclick = () => {
+  index++;
+  if (index >= questions.length) endQuiz();
+  else loadQuestion();
+};
+
+function endQuiz() {
+  document.getElementById("question").classList.add("hidden");
+  document.getElementById("options").classList.add("hidden");
+  document.getElementById("nextBtn").classList.add("hidden");
+
+  document.getElementById("finalScreen").classList.remove("hidden");
+  document.getElementById("finalScore").textContent = "Score final : " + score;
+
+  if (score > highScore) {
+    localStorage.setItem("highScore", score);
+    highScore = score;
+  }
+
+  document.getElementById("finalHighScore").textContent =
+    "High Score : " + highScore;
+}
+
+function restartQuiz() {
+  index = 0;
+  score = 0;
+
+  document.getElementById("scoreText").textContent = "Score : 0";
+  document.getElementById("question").classList.remove("hidden");
+  document.getElementById("options").classList.remove("hidden");
+  document.getElementById("nextBtn").classList.remove("hidden");
+  document.getElementById("finalScreen").classList.add("hidden");
+
+  loadQuestion();
+}
+</script>
 
 </body>
 </html>
